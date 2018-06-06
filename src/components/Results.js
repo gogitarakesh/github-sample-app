@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withRouter, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import {
   Layout,
@@ -40,7 +40,6 @@ export class Results extends Component {
       repositories: [],
       activePage: 1,
       totalItemsCount: 30,
-      isMini: false,
       itemsPerPage: 10,
       loading: true,
       sortValue: ""
@@ -53,7 +52,7 @@ export class Results extends Component {
       path.includes("&p") ? path.indexOf("&p=") : path.length
     );
     const pageNo = path.includes("&p")
-      ? parseInt(path.slice(path.indexOf("&p=") + 3, path.length))
+      ? parseInt(path.slice(path.indexOf("&p=") + 3, path.length), 10)
       : 0;
     this.onSearch(value, pageNo);
   }
@@ -64,20 +63,25 @@ export class Results extends Component {
       axios
         .get(
           `${apiUrl}search/repositories?q=${value}&page=${pageNo}&per_page=${
-          this.state.itemsPerPage
+            this.state.itemsPerPage
           }`
         )
-        .then(res => {
-          this.setState({
-            repositories: res.data.items,
-            totalItemsCount: res.data.total_count <= 1000 ? res.data.total_count : 1000,
-            isMini: true,
-            visible: false,
-            searchTerm: value,
-            activePage: pageNo,
-            loading: false
-          });
-        }, error => { message.error(error.message); });
+        .then(
+          res => {
+            this.setState({
+              repositories: res.data.items,
+              totalItemsCount:
+                res.data.total_count <= 1000 ? res.data.total_count : 1000,
+              visible: false,
+              searchTerm: value,
+              activePage: pageNo,
+              loading: false
+            });
+          },
+          error => {
+            message.error(error.message);
+          }
+        );
     }
   }
   handleSortChange(e) {
@@ -90,21 +94,26 @@ export class Results extends Component {
       axios
         .get(
           `${apiUrl}search/repositories?q=${
-          this.state.searchTerm
+            this.state.searchTerm
           }&page=1&per_page=${this.state.itemsPerPage}&sort=${
-          this.state.sortValue
+            this.state.sortValue
           }&order=desc`
         )
-        .then(res => {
-          this.setState({
-            repositories: res.data.items,
-            totalItemsCount: res.data.total_count <= 1000 ? res.data.total_count : 1000,
-            isMini: true,
-            visible: false,
-            activePage: 1,
-            loading: false
-          });
-        }, (error) => { message.error(error.message); });
+        .then(
+          res => {
+            this.setState({
+              repositories: res.data.items,
+              totalItemsCount:
+                res.data.total_count <= 1000 ? res.data.total_count : 1000,
+              visible: false,
+              activePage: 1,
+              loading: false
+            });
+          },
+          error => {
+            message.error(error.message);
+          }
+        );
     }
   }
   handlePageChange(pageNumber) {
@@ -114,15 +123,21 @@ export class Results extends Component {
     axios
       .get(
         `${apiUrl}search/repositories?q=${
-        this.state.searchTerm
+          this.state.searchTerm
         }&page=${pageNumber}&per_page=${this.state.itemsPerPage}`
       )
-      .then(res => {
-        this.setState({
-          repositories: res.data.items,
-          totalItemsCount: res.data.total_count <= 1000 ? res.data.total_count : 1000
-        });
-      }, error => { message.error(error.message); });
+      .then(
+        res => {
+          this.setState({
+            repositories: res.data.items,
+            totalItemsCount:
+              res.data.total_count <= 1000 ? res.data.total_count : 1000
+          });
+        },
+        error => {
+          message.error(error.message);
+        }
+      );
     this.setState({
       activePage: pageNumber
     });
@@ -186,22 +201,25 @@ export class Results extends Component {
                   style={{
                     padding: "0 24px",
                     minHeight: 280
-                  }}>
+                  }}
+                >
                   <Select
                     defaultValue="Filter by"
                     style={{
                       width: 120,
                       float: "right"
                     }}
-                    onChange={this.handleSortChange.bind(this)}>
-                    <Option value="match">Best Match</Option>
-                    <Option value="stars"> Most Stars</Option>
-                    <Option value="forks"> Most Forks</Option>
+                    onChange={this.handleSortChange.bind(this)}
+                  >
+                    <Option value="match"> Best Match </Option>
+                    <Option value="stars"> Most Stars </Option>
+                    <Option value="forks"> Most Forks </Option>
                   </Select>
                   <div
                     style={{
                       paddingTop: 50
-                    }}>
+                    }}
+                  >
                     <List
                       itemLayout="vertical"
                       size="middle"
@@ -232,7 +250,8 @@ export class Results extends Component {
                               alt="logo"
                               src={item.owner.avatar_url}
                             />
-                          }>
+                          }
+                        >
                           <List.Item.Meta
                             avatar={<Avatar src={item.owner.avatar_url} />}
                             title={
@@ -248,7 +267,7 @@ export class Results extends Component {
                             }
                             description={item.description}
                           />
-                          <Tag>{item.language}</Tag>
+                          <Tag> {item.language} </Tag>
                           <small>
                             Updated {moment(item.updated_at).fromNow()}
                           </small>
@@ -265,4 +284,4 @@ export class Results extends Component {
     );
   }
 }
-export default withRouter(Results);
+export default Results;

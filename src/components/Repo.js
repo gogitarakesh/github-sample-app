@@ -1,7 +1,7 @@
 import { Card, List, Avatar, Tag, Tabs, Icon, Layout, message } from "antd";
 import React, { Component } from "react";
 import { Button } from "antd/lib/radio";
-import { withRouter, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 import { apiUrl } from "../config";
@@ -9,33 +9,61 @@ import { Charts } from "./Charts";
 const TabPane = Tabs.TabPane;
 const { Header, Content } = Layout;
 export class Repo extends Component {
-  pathname = this.props.location.pathname.slice(7, this.props.location.pathname.length);
+  pathname = this.props.location.pathname.slice(
+    7,
+    this.props.location.pathname.length
+  );
   state = {
     loading: true,
     path: this.pathname,
     commits: [],
     statsData: [],
     chartsData: [
-      { day: 'Monday', commits: 0 },
-      { day: 'Tuesday', commits: 0 },
-      { day: 'Wednesday', commits: 0 },
-      { day: 'Thursday', commits: 0 },
-      { day: 'Friday', commits: 0 },
-      { day: 'Saturday', commits: 0 },
-      { day: 'Sunday', commits: 0 },
+      {
+        day: "Monday",
+        commits: 0
+      },
+      {
+        day: "Tuesday",
+        commits: 0
+      },
+      {
+        day: "Wednesday",
+        commits: 0
+      },
+      {
+        day: "Thursday",
+        commits: 0
+      },
+      {
+        day: "Friday",
+        commits: 0
+      },
+      {
+        day: "Saturday",
+        commits: 0
+      },
+      {
+        day: "Sunday",
+        commits: 0
+      }
     ]
   };
 
   handleClick = () => {
-    this.setState({ loading: !this.state.loading });
+    this.setState({
+      loading: !this.state.loading
+    });
   };
   async loadData() {
     try {
-      const res = await fetch(`${apiUrl}repos/${this.state.path}/stats/commit_activity`);
+      const res = await fetch(
+        `${apiUrl}repos/${this.state.path}/stats/commit_activity`
+      );
       const blocks = await res.json();
       if (res.status === 200) {
         this.setState({
-          statsData: blocks[blocks.length - 2].days,
+          statsData: blocks[blocks.length - 2].days
         });
         this.state.chartsData.forEach((element, index) => {
           element.commits = this.state.statsData[index];
@@ -48,12 +76,17 @@ export class Repo extends Component {
   componentDidMount() {
     this.loadData();
     this.loadData();
-    axios.get(`${apiUrl}repos/${this.state.path}/commits`).then(res => {
-      this.setState({
-        commits: res.data,
-        loading: false
-      });
-    }, error => { message.error(error.message) });
+    axios.get(`${apiUrl}repos/${this.state.path}/commits`).then(
+      res => {
+        this.setState({
+          commits: res.data,
+          loading: false
+        });
+      },
+      error => {
+        message.error(error.message);
+      }
+    );
   }
   backToResults() {
     this.props.history.goBack();
@@ -72,7 +105,7 @@ export class Repo extends Component {
               }}
             >
               GitHub
-                  </Link>
+            </Link>
           </Header>
           <Content
             style={{
@@ -82,19 +115,27 @@ export class Repo extends Component {
           >
             <Card
               loading={this.state.loading}
-              title={<div style={{ fontSize: "large" }}>{this.state.path}</div>}
+              title={
+                <div
+                  style={{
+                    fontSize: "large"
+                  }}
+                >
+                  {this.state.path}
+                </div>
+              }
               extra={
                 <Button onClick={this.backToResults.bind(this)}>
                   Back to results
-            </Button>
+                </Button>
               }
             >
               <Tabs type="card">
                 <TabPane
                   tab={
                     <span>
-                      <Icon type="clock-circle" />Commits
-                </span>
+                      <Icon type="clock-circle" /> Commits
+                    </span>
                   }
                   key="1"
                 >
@@ -110,19 +151,22 @@ export class Repo extends Component {
                           avatar={
                             <Avatar
                               src={
-                                item.committer ? item.committer.avatar_url : false
+                                item.committer
+                                  ? item.committer.avatar_url
+                                  : false
                               }
                             />
                           }
                           title={item.commit.message.split("\n")[0]}
-                          description={moment(item.commit.committer.date).fromNow()}
+                          description={moment(
+                            item.commit.committer.date
+                          ).fromNow()}
                         />
                         {item.commit.verification.verified ? (
-                          <Tag color="#87d068">Verified</Tag>
+                          <Tag color="#87d068"> Verified </Tag>
                         ) : (
-                            false
-                          )}
-                        {/* <Button onClick={this.goToRepo.bind(this, item.full_name)}>Check Repo</Button> */}
+                          false
+                        )}
                       </List.Item>
                     )}
                   />
@@ -130,12 +174,15 @@ export class Repo extends Component {
                 <TabPane
                   tab={
                     <span>
-                      <Icon type="bar-chart" />Insights
-                </span>
+                      <Icon type="bar-chart" /> Insights
+                    </span>
                   }
                   key="2"
                 >
-                  <Charts chartsData={this.state.chartsData} path={this.state.path} />
+                  <Charts
+                    chartsData={this.state.chartsData}
+                    path={this.state.path}
+                  />
                 </TabPane>
               </Tabs>
             </Card>
