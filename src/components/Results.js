@@ -12,7 +12,8 @@ import {
   Affix,
   Row,
   Col,
-  message
+  message,
+  Tag
 } from "antd";
 import { apiUrl } from "../config";
 import moment from "moment";
@@ -185,17 +186,14 @@ export class Results extends Component {
                   style={{
                     padding: "0 24px",
                     minHeight: 280
-                  }}
-                >
+                  }}>
                   <Select
-                    defaultValue="Sort by"
+                    defaultValue="Filter by"
                     style={{
                       width: 120,
                       float: "right"
                     }}
-                    onChange={this.handleSortChange.bind(this)}
-                  >
-
+                    onChange={this.handleSortChange.bind(this)}>
                     <Option value="match">Best Match</Option>
                     <Option value="stars"> Most Stars</Option>
                     <Option value="forks"> Most Forks</Option>
@@ -203,8 +201,7 @@ export class Results extends Component {
                   <div
                     style={{
                       paddingTop: 50
-                    }}
-                  >
+                    }}>
                     <List
                       itemLayout="vertical"
                       size="middle"
@@ -235,8 +232,7 @@ export class Results extends Component {
                               alt="logo"
                               src={item.owner.avatar_url}
                             />
-                          }
-                        >
+                          }>
                           <List.Item.Meta
                             avatar={<Avatar src={item.owner.avatar_url} />}
                             title={
@@ -252,6 +248,7 @@ export class Results extends Component {
                             }
                             description={item.description}
                           />
+                          <Tag>{item.language}</Tag>
                           <small>
                             Updated {moment(item.updated_at).fromNow()}
                           </small>
